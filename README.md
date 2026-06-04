@@ -6,11 +6,11 @@
 
 ### The Operating System That Exists Only For Your Current Task
 
-**一个面向任务的 Linux 发行版构想**
+A task-oriented Linux distribution concept.
 
-启动一个系统。  
-完成一个任务。  
-然后让它消失。
+Boot a task.
+Do one thing.
+Then let the system disappear.
 
 ---
 
@@ -25,50 +25,44 @@
 
 # Why?
 
-现代操作系统为了满足所有需求而存在。
+Modern operating systems are designed to be ready for everything.
 
-它们需要：
+They load:
 
-- 加载大量服务
-- 长时间驻留后台
-- 维护复杂状态
-- 为所有可能的任务做好准备
+* countless services
+* background processes
+* desktop environments
+* features you may never use
 
-Lightnix 的想法恰恰相反。
+Lightnix explores the opposite idea.
 
-> 如果一个操作系统只为当前任务而存在，会怎样？
+> What if an operating system only existed for the task you are performing right now?
 
-当你想：
+When you want to:
 
-- 看视频
-- 写代码
-- 玩游戏
-- 浏览网页
+* watch videos
+* write code
+* play games
+* browse the web
 
-系统只加载该任务所需的最小环境。
+the system loads only the environment required for that task.
 
-任务结束。
-
-系统消失。
+Nothing more.
 
 ---
 
 # Vision
 
-我们认为：
+Operating systems should not be permanent.
 
-操作系统不应该是永远运行的庞然大物。
+They should behave like tools:
 
-它应该像工具一样：
+* appear when needed
+* disappear when finished
+* be instantly recoverable
+* remain focused on a single purpose
 
-- 需要时出现
-- 不需要时离开
-- 可以随时恢复
-- 永远专注于当前任务
-
----
-
-传统操作系统：
+Traditional systems:
 
 ```text
 Boot
@@ -80,7 +74,7 @@ Run Everything
 Keep Everything Alive
 ```
 
-Lightnix：
+Lightnix:
 
 ```text
 Choose Task
@@ -96,13 +90,13 @@ Disappear
 
 # Concept
 
-设想这样一个启动菜单：
+Imagine a boot menu like this:
 
 ```text
 ┌──────────────────────────────┐
 │          Lightnix            │
 ├──────────────────────────────┤
-│ ▶ Watch Bilibili             │
+│ ▶ Watch Videos               │
 │ ▶ Minecraft                  │
 │ ▶ Office                     │
 │ ▶ Firefox                    │
@@ -110,15 +104,13 @@ Disappear
 └──────────────────────────────┘
 ```
 
-选择一个任务。
+Each entry launches a dedicated environment.
 
-系统只加载对应环境。
+No full desktop startup.
 
-无需等待完整桌面。
+No unnecessary services.
 
-无需启动无关服务。
-
-无需携带历史包袱。
+No historical baggage.
 
 ---
 
@@ -126,102 +118,91 @@ Disappear
 
 ## ⚡ Fast by Design
 
-Lightnix 不追求功能最多。
+Lightnix focuses on:
 
-而追求：
+* minimal boot paths
+* minimal dependencies
+* minimal runtime overhead
 
-- 最小启动路径
-- 最小依赖集合
-- 最小资源占用
+Goals:
 
-目标：
-
-- 亚秒级系统准备
-- 秒级进入任务环境
-- 接近即时恢复
+* near-instant startup
+* task-oriented environments
+* rapid recovery
 
 ---
 
 ## 🧩 Task-Oriented Systems
 
-每个功能都是一个独立环境：
+Each task owns its own environment:
 
 ```text
-Bilibili OS
-Minecraft OS
+Video OS
+Gaming OS
+Coding OS
 Office OS
-Firefox OS
 ```
 
-它们拥有：
+Each environment has:
 
-- 独立 RootFS
-- 独立配置
-- 独立运行环境
+* dedicated root filesystem
+* dedicated configuration
+* dedicated software stack
 
-但共享基础运行时。
+while sharing a common runtime layer.
 
 ---
 
 ## 🔥 Memory-First Runtime
 
-Lightnix 的理想运行模式：
+Ideal execution model:
 
 ```text
 SquashFS
       ↓
 tmpfs
       ↓
-Run In Memory
+Run Entirely In Memory
 ```
 
-整个系统在内存中运行。
+Benefits:
 
-获得：
-
-- 更快响应
-- 更少磁盘访问
-- 更简单状态管理
+* faster response
+* fewer disk operations
+* simplified runtime state
 
 ---
 
 ## 📸 Snapshot Everything
 
-每个环境都可以被保存。
+Save a working environment:
 
 ```bash
 lx snapshot save coding
 ```
 
-随后：
+Restore it later:
 
 ```bash
 lx snapshot restore coding
 ```
 
-恢复到之前的状态。
-
-如同游戏存档。
+Like game save states for operating systems.
 
 ---
 
 ## 🔒 Minimal Attack Surface
 
-安全性来自于：
+Security through simplicity.
 
-- 更少组件
-- 更少服务
-- 更少后台进程
-- 更小 RootFS
+Planned technologies:
 
-而不是更多安全软件。
+* Namespace Isolation
+* seccomp Filtering
+* Read-Only RootFS
+* dm-verity Verification
 
-目标包括：
-
-- Namespace Isolation
-- seccomp Filtering
-- Read-only RootFS
-- dm-verity Verification
+Smaller systems naturally expose fewer attack surfaces.
 
 ---
 
@@ -246,7 +227,7 @@ lx snapshot restore coding
       ┌──────────────────┼──────────────────┐
       ▼                  ▼                  ▼
 
- Bilibili FS      Minecraft FS       Office FS
+   Video FS         Gaming FS         Office FS
 
       └──────────────────┼──────────────────┘
                          ▼
@@ -264,40 +245,40 @@ lx snapshot restore coding
 
 ---
 
-# Technology Stack
+# Planned Technology Stack
 
-| Component | Planned Choice |
-|------------|----------------|
-| Build System | Buildroot |
-| Kernel | Linux LTS |
-| C Library | musl libc |
-| Userland | BusyBox |
-| Init System | BusyBox Init / s6 |
-| Graphics | Wayland + Cage |
-| Isolation | Namespaces + seccomp |
-| Filesystem | SquashFS + OverlayFS |
-| Runtime | tmpfs |
-| Snapshots | Recipe-based Overlay |
+| Component    | Choice               |
+| ------------ | -------------------- |
+| Build System | Buildroot            |
+| Kernel       | Linux LTS            |
+| C Library    | musl libc            |
+| Userland     | BusyBox              |
+| Init System  | BusyBox Init / s6    |
+| Graphics     | Wayland + Cage       |
+| Isolation    | Namespaces + seccomp |
+| Filesystem   | SquashFS + OverlayFS |
+| Runtime      | tmpfs                |
+| Snapshots    | Recipe-Based Overlay |
 
 ---
 
 # Package Manager (Planned)
 
-Lightnix 计划提供声明式包管理器：
+Lightnix intends to provide a declarative package manager:
 
 ```bash
-lx install bilibili
+lx install firefox
 
-lx switch minecraft
+lx switch gaming
 
 lx snapshot save coding
 
 lx snapshot restore gaming
 
-lx remove wechat
+lx remove application
 ```
 
-每个软件实际上都是：
+Conceptually:
 
 ```text
 Recipe
@@ -309,181 +290,131 @@ RootFS
 Task Environment
 ```
 
-用户无需关心构建细节。
-
----
-
-# Runtime Layout
-
-```text
-/
-├── common
-├── etc
-├── home
-├── media
-├── mnt
-├── opt
-└── var
-```
-
-说明：
-
-| Directory | Purpose |
-|------------|------------|
-| common | Shared binaries and libraries |
-| etc | Configuration overlays |
-| home | Persistent user data |
-| media | Device mounts |
-| mnt | Mount points |
-| opt | Task-specific files |
-| var | Runtime data |
-
 ---
 
 # Roadmap
 
 ## Phase 1 — Foundation
 
-- [ ] Buildroot Prototype
-- [ ] Minimal RootFS
-- [ ] SquashFS Integration
-- [ ] OverlayFS Support
+* [ ] Buildroot prototype
+* [ ] Minimal root filesystem
+* [ ] SquashFS support
+* [ ] OverlayFS integration
 
----
+## Phase 2 — Task Environments
 
-## Phase 2 — Task System
-
-- [ ] Task Launcher
-- [ ] Environment Composer
-- [ ] Shared Runtime Pool
-
----
+* [ ] Task launcher
+* [ ] RootFS composer
+* [ ] Shared runtime pool
 
 ## Phase 3 — Snapshots
 
-- [ ] Snapshot Engine
-- [ ] Export / Import
-- [ ] Version Rollback
-
----
+* [ ] Snapshot engine
+* [ ] Export and import
+* [ ] Rollback support
 
 ## Phase 4 — Package Manager
 
-- [ ] Recipe Format
-- [ ] Dependency Resolution
-- [ ] Automatic Builds
-
----
+* [ ] Recipe format
+* [ ] Dependency resolution
+* [ ] Automated builds
 
 ## Phase 5 — Hot Switching
 
-- [ ] Runtime Environment Switching
-- [ ] Instant Recovery
-- [ ] Session Preservation
+* [ ] Runtime switching
+* [ ] Session preservation
+* [ ] Instant recovery
 
 ---
 
 # Inspirations
 
-Lightnix 受到以下项目启发：
+Lightnix draws inspiration from:
 
-- NixOS
-- GNU Guix
-- Tiny Core Linux
-- Alpine Linux
-- Fedora Silverblue
-- Docker
-- Podman
-- Unikernel Research
-- LiveCD Systems
-- Game Console Snapshot Systems
+* NixOS
+* GNU Guix
+* Tiny Core Linux
+* Alpine Linux
+* Fedora Silverblue
+* Docker
+* Podman
+* Unikernel research
+* LiveCD systems
+* Game console snapshot systems
 
-它并不是上述项目的替代品。
+This project is not intended to replace them.
 
-而是一次不同方向的探索。
+Instead, it explores a different direction.
 
 ---
 
 # Origin Story
 
-这个项目诞生于一个深夜。
+This project started late one night while experimenting with Buildroot.
 
-当时我正在折腾 Buildroot。
+A simple question appeared:
 
-突然冒出一个问题：
+> Why must an operating system always exist?
 
-> 为什么操作系统必须永远存在？
+What if:
 
-如果：
+* watching videos had its own OS
+* coding had its own OS
+* gaming had its own OS
 
-- 看视频有自己的系统
-- 写代码有自己的系统
-- 玩游戏有自己的系统
+I am not an operating system developer.
 
-会怎样？
+I do not claim to know all the implementation details.
 
-我并不是操作系统开发者。
+But the idea felt exciting enough to write down.
 
-我甚至不了解许多底层实现细节。
-
-但这个想法让我兴奋。
-
-于是我把它记录下来。
-
-这就是 Lightnix 的起点。
+Lightnix is the result of that thought experiment.
 
 ---
 
 # Current Status
 
-⚠️ Lightnix 目前仍处于概念设计阶段。
+⚠️ Concept Stage
 
-这是一个正在寻找实现路径的系统构想。
+Lightnix is currently an idea and design proposal.
 
-许多技术方案仍需验证：
+Many technical challenges remain unsolved:
 
-- 热切换是否可行
-- RootFS 组合效率如何
-- Snapshot 机制如何设计
-- 包管理器如何实现
+* runtime switching
+* filesystem composition
+* snapshot architecture
+* package management
 
-欢迎一起探索。
+The goal is to explore and discuss these possibilities.
 
 ---
 
 # Contributing
 
-如果你对以下领域感兴趣：
+Interested in:
 
-- Buildroot
-- Linux Kernel
-- OverlayFS
-- Namespace
-- Container Runtime
-- Init Systems
-- Operating System Design
+* Buildroot
+* Linux Kernel
+* OverlayFS
+* Namespaces
+* Container runtimes
+* Operating system design
 
-欢迎参与讨论。
-
-任何想法、Issue 或 Pull Request 都非常欢迎。
+Contributions, discussions, and ideas are welcome.
 
 ---
 
 # Join Us
 
-许多伟大的系统项目，
+Many great systems started as crazy ideas.
 
-最开始都只是一个疯狂的想法。
+Lightnix is one of them.
 
-Lightnix 也是。
+If you believe operating systems should be focused, disposable, and task-oriented—
 
-如果你觉得：
+join the discussion.
 
-> “操作系统应该只为当前任务而存在”
-
-那么欢迎加入。
-
-让我们一起看看这个想法最终会走到哪里。
+Let's see where this idea leads.
 
 ---
 
