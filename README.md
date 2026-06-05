@@ -1,18 +1,12 @@
-# Lightnix
+# ⚡ Lightnix
 
 <div align="center">
 
-# ⚡ Lightnix
+# Lightnix
 
-### The Operating System That Exists Only For Your Current Task
+### A Runtime For Demand-Driven Computing
 
-A task-oriented Linux distribution concept.
-
-Boot a task.
-Do one thing.
-Then let the system disappear.
-
----
+*"Software should not exist before it is needed."*
 
 ![Status](https://img.shields.io/badge/status-concept-blue)
 ![Buildroot](https://img.shields.io/badge/based%20on-Buildroot-green)
@@ -23,369 +17,485 @@ Then let the system disappear.
 
 ---
 
-# Why?
+# What Is Lightnix?
 
-Modern operating systems are designed to be ready for everything.
+Lightnix is not a Linux distribution.
 
-They load:
+Lightnix is an experiment.
 
-* countless services
-* background processes
-* desktop environments
-* features you may never use
+An attempt to rethink one fundamental assumption of modern operating systems:
 
-Lightnix explores the opposite idea.
+> Why does the operating system need to load everything before the user needs anything?
 
-> What if an operating system only existed for the task you are performing right now?
-
-When you want to:
-
-* watch videos
-* write code
-* play games
-* browse the web
-
-the system loads only the environment required for that task.
-
-Nothing more.
-
----
-
-# Vision
-
-Operating systems should not be permanent.
-
-They should behave like tools:
-
-* appear when needed
-* disappear when finished
-* be instantly recoverable
-* remain focused on a single purpose
-
-Traditional systems:
+Modern systems assume:
 
 ```text
 Boot
  ↓
 Load Everything
  ↓
-Run Everything
+Keep Everything Running
  ↓
-Keep Everything Alive
+Use A Small Part Of It
 ```
 
-Lightnix:
+Lightnix explores the opposite direction:
 
 ```text
-Choose Task
+Need Something
  ↓
-Compose Environment
+Load It
  ↓
-Do One Thing
+Use It
  ↓
-Disappear
+Remove It
 ```
+
+Not applications.
+
+Not containers.
+
+Entire operating system capabilities.
 
 ---
 
-# Concept
+# The Problem
 
-Imagine a boot menu like this:
+Modern operating systems have become increasingly permanent.
+
+Even if a user only wants to:
+
+- watch a video
+- browse a website
+- edit a document
+
+the system may still load:
+
+- desktop environments
+- update services
+- hardware daemons
+- development libraries
+- software stacks
+- components never used during that session
+
+A large portion of a modern system exists simply because it *might* be needed.
+
+Lightnix asks:
+
+> What if software only existed when it was actually being used?
+
+---
+
+# Core Philosophy
+
+## Demand-Driven Computing
+
+The operating system should adapt itself to the current task.
+
+Not the other way around.
+
+When a user launches a browser:
 
 ```text
-┌──────────────────────────────┐
-│          Lightnix            │
-├──────────────────────────────┤
-│ ▶ Watch Videos               │
-│ ▶ Minecraft                  │
-│ ▶ Office                     │
-│ ▶ Firefox                    │
-│ ▶ Terminal                   │
-└──────────────────────────────┘
+Load:
+ Wayland
+ Fonts
+ Audio
+ Network
+
+Launch Browser
 ```
 
-Each entry launches a dedicated environment.
-
-No full desktop startup.
-
-No unnecessary services.
-
-No historical baggage.
-
----
-
-# Core Ideas
-
-## ⚡ Fast by Design
-
-Lightnix focuses on:
-
-* minimal boot paths
-* minimal dependencies
-* minimal runtime overhead
-
-Goals:
-
-* near-instant startup
-* task-oriented environments
-* rapid recovery
-
----
-
-## 🧩 Task-Oriented Systems
-
-Each task owns its own environment:
+When the browser closes:
 
 ```text
-Video OS
-Gaming OS
-Coding OS
-Office OS
+Unload:
+ Browser Dependencies
 ```
 
-Each environment has:
+Unused functionality should disappear.
 
-* dedicated root filesystem
-* dedicated configuration
-* dedicated software stack
-
-while sharing a common runtime layer.
+Not remain forever.
 
 ---
 
-## 🔥 Memory-First Runtime
+## The Operating System Is A Runtime
 
-Ideal execution model:
+Traditional systems treat RootFS as static.
+
+```text
+Boot
+ ↓
+RootFS Exists
+ ↓
+System Runs
+```
+
+Lightnix treats RootFS as dynamic.
+
+```text
+Boot
+ ↓
+Compose RootFS
+ ↓
+Run
+ ↓
+Recompose RootFS
+ ↓
+Continue Running
+```
+
+The system becomes a runtime.
+
+Not a fixed installation.
+
+---
+
+## Memory First
+
+Storage is persistence.
+
+Memory is execution.
+
+Lightnix aims to run most immutable system components entirely from RAM.
 
 ```text
 SquashFS
-      ↓
+     ↓
 tmpfs
-      ↓
-Run Entirely In Memory
+     ↓
+Runtime
 ```
 
 Benefits:
 
-* faster response
-* fewer disk operations
-* simplified runtime state
+- fewer disk accesses
+- lower latency
+- simpler rollback
+- faster recovery
 
 ---
 
-## 📸 Snapshot Everything
+## Capability Injection
 
-Save a working environment:
+Instead of installing large software stacks permanently:
 
-```bash
-lx snapshot save coding
+```text
+Python
+PyTorch
+CUDA
+TensorRT
 ```
 
-Restore it later:
+Lightnix dynamically injects only the capabilities required.
 
-```bash
-lx snapshot restore coding
+Example:
+
+```text
+AI Session
+
+Load:
+ Python Runtime
+ CUDA Runtime
+ PyTorch
+
+Use
+
+Unload
 ```
 
-Like game save states for operating systems.
+Unused components should not occupy memory.
+
+Unused dependencies should not exist.
 
 ---
 
-## 🔒 Minimal Attack Surface
+## Capability Reclamation
 
-Security through simplicity.
+Most operating systems can load functionality.
+
+Few can truly remove it.
+
+Lightnix aims to reclaim resources when they are no longer needed.
+
+```text
+AI Environment
+ ↓
+Task Complete
+ ↓
+Unload AI Stack
+ ↓
+Recover Memory
+```
+
+The system should continuously shrink and grow according to demand.
+
+---
+
+# Runtime RootFS Recomposition
+
+A traditional RootFS is static.
+
+Lightnix explores a different model.
+
+```text
+Current State:
+
+Python
+PyTorch
+CUDA
+```
+
+User switches to Office mode:
+
+```text
+Unload:
+
+Python
+PyTorch
+CUDA
+
+Load:
+
+Wayland
+Fonts
+LibreOffice
+```
+
+Without rebooting.
+
+Without replacing the kernel.
+
+Without restarting the machine.
+
+Only the required capabilities remain.
+
+---
+
+# Shared Data Model
+
+Applications may come and go.
+
+Tasks may change.
+
+User data should remain.
+
+Shared directories:
+
+```text
+/home
+/media
+/mnt
+/etc
+```
+
+persist independently from runtime environments.
+
+This allows:
+
+- task switching
+- environment rebuilding
+- snapshot recovery
+
+without losing user state.
+
+---
+
+# Snapshot Everything
+
+Lightnix treats environments like game save states.
+
+```bash
+lx snapshot save ai
+```
+
+Restore later:
+
+```bash
+lx snapshot restore ai
+```
+
+Work should be resumable.
+
+Sessions should be recoverable.
+
+Recovery should be instant.
+
+---
+
+# Security Through Absence
+
+Every component loaded is a potential attack surface.
+
+Lightnix attempts to reduce attack surface by reducing existence.
+
+A component that is not loaded:
+
+```text
+Cannot Consume Memory
+Cannot Slow The System
+Cannot Be Exploited
+```
 
 Planned technologies:
 
-* Namespace Isolation
-* seccomp Filtering
-* Read-Only RootFS
-* dm-verity Verification
+- Namespaces
+- seccomp
+- Read-only RootFS
+- dm-verity
+- Immutable Runtime Layers
 
-Smaller systems naturally expose fewer attack surfaces.
+---
+
+# Dependency Topology
+
+Traditional package managers manage packages.
+
+Lightnix aims to manage capabilities.
+
+Instead of:
+
+```text
+Package A
+Package B
+Package C
+```
+
+Lightnix explores:
+
+```text
+Capability Graph
+
+AI
+├─ Python
+├─ CUDA
+└─ PyTorch
+
+Office
+├─ Wayland
+├─ Fonts
+└─ LibreOffice
+```
+
+Dependencies become topology.
+
+Not package lists.
+
+This may allow:
+
+- dynamic injection
+- dynamic removal
+- automatic dependency resolution
+- runtime garbage collection
 
 ---
 
 # Architecture
 
 ```text
-                       User
-                         │
-                         ▼
+                    User
+                      │
+                      ▼
 
-              ┌──────────────────┐
-              │  Task Selector   │
-              └──────────────────┘
-                         │
-                         ▼
+            ┌───────────────────┐
+            │ Capability Engine │
+            └───────────────────┘
+                      │
+                      ▼
 
-              ┌──────────────────┐
-              │ RootFS Composer  │
-              └──────────────────┘
-                         │
+            ┌───────────────────┐
+            │ RootFS Composer   │
+            └───────────────────┘
+                      │
+                      ▼
 
-      ┌──────────────────┼──────────────────┐
-      ▼                  ▼                  ▼
+            Dynamic Runtime Graph
 
-   Video FS         Gaming FS         Office FS
+       AI      Office      Browser
 
-      └──────────────────┼──────────────────┘
-                         ▼
+         \        │        /
 
-                Shared Runtime Pool
+          \       │       /
 
-                    BusyBox
-                    musl libc
-                    Wayland
+           Shared Runtime Pool
 
-                         ▼
+             BusyBox
+             musl
+             Wayland
 
-                   Linux Kernel
+                    │
+                    ▼
+
+              Linux Kernel
 ```
 
 ---
 
-# Planned Technology Stack
+# Technology Direction
 
-| Component    | Choice               |
-| ------------ | -------------------- |
-| Build System | Buildroot            |
-| Kernel       | Linux LTS            |
-| C Library    | musl libc            |
-| Userland     | BusyBox              |
-| Init System  | BusyBox Init / s6    |
-| Graphics     | Wayland + Cage       |
-| Isolation    | Namespaces + seccomp |
-| Filesystem   | SquashFS + OverlayFS |
-| Runtime      | tmpfs                |
-| Snapshots    | Recipe-Based Overlay |
-
----
-
-# Package Manager (Planned)
-
-Lightnix intends to provide a declarative package manager:
-
-```bash
-lx install firefox
-
-lx switch gaming
-
-lx snapshot save coding
-
-lx snapshot restore gaming
-
-lx remove application
-```
-
-Conceptually:
-
-```text
-Recipe
-   ↓
-Buildroot
-   ↓
-RootFS
-   ↓
-Task Environment
-```
+| Component | Direction |
+|------------|------------|
+| Build System | Buildroot |
+| Runtime | tmpfs |
+| RootFS | SquashFS + OverlayFS |
+| C Library | musl |
+| Userland | BusyBox |
+| Isolation | Namespaces + seccomp |
+| Snapshots | Runtime State Layers |
+| Dependency Model | Capability Graph |
+| Runtime Switching | RootFS Recomposition |
 
 ---
 
-# Roadmap
+# Research Goals
 
-## Phase 1 — Foundation
+Lightnix attempts to explore several questions:
 
-* [ ] Buildroot prototype
-* [ ] Minimal root filesystem
-* [ ] SquashFS support
-* [ ] OverlayFS integration
+### Can RootFS be dynamically recomposed?
 
-## Phase 2 — Task Environments
+### Can dependencies become runtime objects?
 
-* [ ] Task launcher
-* [ ] RootFS composer
-* [ ] Shared runtime pool
+### Can unused functionality disappear automatically?
 
-## Phase 3 — Snapshots
+### Can operating systems behave like tools instead of installations?
 
-* [ ] Snapshot engine
-* [ ] Export and import
-* [ ] Rollback support
-
-## Phase 4 — Package Manager
-
-* [ ] Recipe format
-* [ ] Dependency resolution
-* [ ] Automated builds
-
-## Phase 5 — Hot Switching
-
-* [ ] Runtime switching
-* [ ] Session preservation
-* [ ] Instant recovery
-
----
-
-# Inspirations
-
-Lightnix draws inspiration from:
-
-* NixOS
-* GNU Guix
-* Tiny Core Linux
-* Alpine Linux
-* Fedora Silverblue
-* Docker
-* Podman
-* Unikernel research
-* LiveCD systems
-* Game console snapshot systems
-
-This project is not intended to replace them.
-
-Instead, it explores a different direction.
-
----
-
-# Origin Story
-
-This project started late one night while experimenting with Buildroot.
-
-A simple question appeared:
-
-> Why must an operating system always exist?
-
-What if:
-
-* watching videos had its own OS
-* coding had its own OS
-* gaming had its own OS
-
-I am not an operating system developer.
-
-I do not claim to know all the implementation details.
-
-But the idea felt exciting enough to write down.
-
-Lightnix is the result of that thought experiment.
+### Can a machine contain only what is currently required?
 
 ---
 
 # Current Status
 
-⚠️ Concept Stage
+⚠ Concept Stage
 
-Lightnix is currently an idea and design proposal.
+Lightnix is currently a research and design project.
 
-Many technical challenges remain unsolved:
+Many challenges remain unsolved:
 
-* runtime switching
-* filesystem composition
-* snapshot architecture
-* package management
+- Runtime RootFS recomposition
+- Capability graph resolution
+- Dynamic dependency reclamation
+- Hot environment switching
+- Memory-first execution models
 
-The goal is to explore and discuss these possibilities.
+The purpose of this repository is to explore these ideas.
+
+---
+
+# Why Buildroot?
+
+Lightnix started as a Buildroot experiment.
+
+Buildroot allows developers to construct extremely small and focused Linux systems.
+
+A simple question emerged:
+
+> If a Linux system can be reduced to only what is required...
+
+Why stop there?
+
+Why not allow the system to continuously redefine what is required?
+
+Lightnix is the result of that question.
 
 ---
 
@@ -393,34 +503,27 @@ The goal is to explore and discuss these possibilities.
 
 Interested in:
 
-* Buildroot
-* Linux Kernel
-* OverlayFS
-* Namespaces
-* Container runtimes
-* Operating system design
+- Buildroot
+- Linux internals
+- OverlayFS
+- Runtime systems
+- Dependency management
+- Memory optimization
+- Operating system design
 
-Contributions, discussions, and ideas are welcome.
+Contributions and discussions are welcome.
 
----
+Especially criticism.
 
-# Join Us
+Many ideas here may be wrong.
 
-Many great systems started as crazy ideas.
-
-Lightnix is one of them.
-
-If you believe operating systems should be focused, disposable, and task-oriented—
-
-join the discussion.
-
-Let's see where this idea leads.
+That is why they should be explored.
 
 ---
 
 # License
 
-Core Code
+Core Runtime
 
 ```text
 GPL-2.0-only
@@ -436,8 +539,10 @@ CC0
 
 <div align="center">
 
-### ⚡ Lightnix
+### Lightnix
 
-The Operating System That Exists Only For Your Current Task
+Not A Distribution.
+
+A Runtime.
 
 </div>
